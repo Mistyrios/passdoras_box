@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Passdora's Box{% endblock %}</title>
+    <link rel="icon" href="{{ asset('images/favicon.ico') }}" type="image/x-icon">
+    {% block stylesheets %}
+    {% endblock %}
+
+    {% block javascripts %}
+        {% block importmap %}{{ importmap('app') }}{% endblock %}
+        <script>
+            // On page load or when changing themes, best to add inline in `head` to avoid FOUC
+            if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark')
+            }
+        </script>
+    {% endblock %}
+</head>
+<body>
+<div class="main min-h-screen flex flex-col gap-8">
+    <main class="{{ full_width is defined and full_width ? '' : 'max-w-screen-xl' }} w-[100%] m-auto my-4 flex-grow-1 px-4">
+        {% block body %}{% endblock %}
+    </main>
+</div>
+</body>
+</html>

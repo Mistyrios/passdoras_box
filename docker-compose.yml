@@ -1,0 +1,54 @@
+services:
+
+  # Web Server Service
+  pb_nginx:
+    image: nginx:alpine
+    container_name: pb_nginx
+    ports:
+      - "8182:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - pb_php
+      - pb_pgsql
+    networks:
+        - pb_network
+
+  pb_pgsql:
+    image: postgres
+    container_name: pb_pgsql
+    volumes:
+      - ./docker/database:/database
+      - pgsql_data:/var/lib/postgresql/data
+    ports:
+      - "5152:5432"
+    environment:
+      POSTGRES_DB: passdoras_box
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: databaseSuperStrongPassword
+    networks:
+        - pb_network
+
+  # Application Service
+  pb_php:
+    container_name: pb_php
+    build:
+      context: ./
+      dockerfile: docker/php/Dockerfile
+    volumes:
+      - ./:/var/www
+    ports:
+      - "9192:9000"
+    working_dir: /var/www
+    environment:
+      PHP_IDE_CONFIG: serverName=localhost
+    networks:
+        - pb_network
+
+volumes:
+  pgsql_data:
+
+networks:
+  pb_network:
+      driver: bridge
